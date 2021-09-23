@@ -1,0 +1,60 @@
+---
+title: "STATS101B 4A Homework 8"
+author: "Karina Santoso (UID 805291900)"
+date: "6/5/2021"
+output: pdf_document
+---
+
+```{r}
+library(FrF2)
+my.design <- FrF2(16, 8, generators = c("BCD", "ACD", "ABC", "ABD"), randomize = F)
+
+my.design
+write.table(my.design, "~/Desktop/design.txt", sep="\t", quote=FALSE, dec=".",row.names=FALSE)
+```
+
+
+```{r}
+data <- read.table("~/Desktop/result.txt", header = TRUE, sep = ",")
+consumption.model <- lm(consumption~alpha*beta*Aq*d*mt*mf*pin*dzul, data = data)
+DanielPlot(consumption.model, half = F)
+
+range.model <- lm(range~alpha*beta*Aq*d*mt*mf*pin*dzul, data = data)
+DanielPlot(range.model, half = F)
+
+consumption.model2 <- lm(consumption~Aq + alpha:beta + pin, data = data)
+summary(consumption.model2)
+
+range.model2 <- lm(range~alpha + d, data = data)
+summary(range.model2)
+```
+
+```{r}
+
+res.consumption <- consumption.model2$residuals
+par(mfrow=c(1,2))
+qqnorm(res.consumption); qqline(res.consumption)
+plot(consumption.model2$fitted.values, res.consumption, xlab = 'Predicted values',
+     ylab = 'Residuals')
+
+res.range <- range.model2$residuals
+par(mfrow=c(1,2))
+qqnorm(res.range); qqline(res.range)
+plot(range.model2$fitted.values, res.range, xlab = 'Predicted values',
+     ylab = 'Residuals')
+```
+
+
+
+```{r}
+
+# generate design for confirmation experiments
+my.design <- FrF2(4, 3, generators = c("AB"), randomize = F)
+cat("Generators of the design \n")
+generators(my.design)
+cat("Alias structure \n")
+design.info(my.design)$aliased
+
+#data <- read.table("~/Desktop/result.txt", header = TRUE, sep = ",")
+#data
+```
